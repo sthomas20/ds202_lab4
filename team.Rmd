@@ -1,0 +1,21 @@
+---
+title: "team"
+author: "Sonia Thomas and John Nownes"
+date: "3/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab 4
+
+### Part 1: Cleaning the Data
+
+#### Question 1:
+
+
+```{r cars}
+summary(cars)
+

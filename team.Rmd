@@ -1,5 +1,5 @@
 ---
-title: "team"
+title: "Team file"
 author: "Sonia Thomas and John Nownes"
 date: "3/11/2020"
 output: html_document
@@ -21,7 +21,7 @@ bio<- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
 
 ### Part 1: Cleaning the Data
 
-#### Question 1 and 2
+#### Questions 1-3
 
 ```{r }
 defClean<- defense %>% 
@@ -31,7 +31,7 @@ defClean<- defense %>%
   mutate_at(vars(contains("Turnover")), funs(as.numeric)) %>%
   mutate_at(vars(contains("Pass")), funs(as.numeric)) 
   
-str(defense)
+str(defClean)
 
 offClean<- offense %>% 
   mutate(Name =as.factor(Name)) %>%
@@ -40,14 +40,18 @@ offClean<- offense %>%
   mutate_at(vars(contains("Receiving")), funs(as.numeric)) %>%
   mutate_at(vars(contains("Passing")), funs(as.numeric)) 
  
-str(offense)
+str(offClean)
 
 bioClean<- bio %>% 
   mutate(Name =as.factor(Name)) %>%
   mutate_at(vars(contains("Weight")), funs(as.numeric)) %>%
   separate(Height, into = c("ft", "inches")) %>%
-  mutate(Height = as.numeric(ft)*12 + as.numeric(inches)) 
+  mutate(Height = as.numeric(ft)*12 + as.numeric(inches)) %>%
+  select(-c(ft, inches)) %>%
+  select(1:2, Height, everything())
   
 str(bioClean)
 
 ```
+
+### Part 2: Tidying (1)

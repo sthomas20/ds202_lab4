@@ -76,6 +76,8 @@ table(bioClean$State)
 
 #PART THREE: JOINING DATA FRAMES
 
+#Question 3
+offClean <- offClean %>%
+  pivot_longer(Rushing_ATT:Passing_INT, names_to = 'Statistic')
 
-
-
+offClean

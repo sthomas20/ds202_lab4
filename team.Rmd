@@ -63,14 +63,28 @@ str(bioClean)
     
 2. 
     ```{r}
-    
+    defClean %>%
+      ggplot(aes(value)) + geom_histogram(binwidth = .5) + facet_wrap(~Statistic) + ggtitle("Defensive Statistic Histograms")
     ```
+    * Looking at the above plot of all the defensive histograms, it is clear that the three turnover categories (forced fumble, fumble recovery, and interceptions) are the most rare defensive statistics. Sacks are also quite rare as well.
     
 3.
     ```{r}
-    
-    ```
+    dat2_3 = defClean %>%
+  filter(Opponent_Opponent == "West Virginia" | Opponent_Opponent == "Kansas State", Statistic == "Tackles_Solo") %>%
+  pivot_wider(names_from = Opponent_Opponent, values_from =  value)
 
+dat2_3$`West Virginia`[is.na(dat2_3$`West Virginia`)] = 0
+dat2_3$`Kansas State`[is.na(dat2_3$`Kansas State`)] = 0
+dat2_3 = dat2_3 %>%
+  filter(`West Virginia` != 0 | `Kansas State` != 0)
+
+p = dat2_3 %>%
+  ggplot(aes(x = `West Virginia`, y = `Kansas State`)) + geom_count() + coord_cartesian(xlim = c(0,6))
+p = p + ggtitle("Scatter Plot of Solo Tackles For Each Player\n Against West Virginia and Kansas State")
+p
+    ```
+    * Iowa State had a better defense against Kansas State, based on the comparison of the total solo tackles against each team. From the plot above, you can tell that most individual players recorded a higher number of solo tackles against Kansas State than they did against West Virginia. In addition, by summing the total number of solo tackles against each team, we see that ISU tallied 45 total solo tackles against Kansas State and only 34 total solo tackles against West Virginia.
     
 ### Part two: Tidying (2)
 

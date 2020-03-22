@@ -34,5 +34,27 @@ bioClean<- bio %>%
 
 str(bioClean)
 
-defClean %>%
+
+
+defClean = defClean %>%
   pivot_longer(Tackles_Solo:Pass_PB, names_to = 'Statistic')
+
+defClean %>%
+  ggplot(aes(value)) + geom_histogram(binwidth = .5) +facet_wrap(~Statistic) + ggtitle("Defensive Statistic Histograms")
+
+dat2_3 = defClean %>%
+  filter(Opponent_Opponent == "West Virginia" | Opponent_Opponent == "Kansas State", Statistic == "Tackles_Solo") %>%
+  pivot_wider(names_from = Opponent_Opponent, values_from =  value)
+
+dat2_3$`West Virginia`[is.na(dat2_3$`West Virginia`)] = 0
+dat2_3$`Kansas State`[is.na(dat2_3$`Kansas State`)] = 0
+dat2_3 = dat2_3 %>%
+  filter(`West Virginia` != 0 | `Kansas State` != 0)
+
+p = dat2_3 %>%
+  ggplot(aes(x = `West Virginia`, y = `Kansas State`)) + geom_count() + coord_cartesian(xlim = c(0,6))
+p = p + ggtitle("Scatter Plot of Solo Tackles For Each Player Against West Virginia and Against Kansas State")
+p
+
+sum(dat2_3$`West Virginia`)
+sum(dat2_3$`Kansas State`)

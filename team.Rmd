@@ -90,14 +90,17 @@ p
 
 1.
     ```{r}
-    
+    bioClean <- bioClean %>%
+      separate(col=Hometown, into=c('City', 'State'), sep=',') 
+
+    head(bioClean, n=3)
     ```
     
 2.
     ```{r}
-    
+    table(bioClean$State)
     ```
-    
+    * The output above you can see how many players are from each state. You can see that most players are from Iowa. 
     
 ### Part three: Joining data frames
 

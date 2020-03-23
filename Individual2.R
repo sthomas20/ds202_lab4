@@ -56,5 +56,19 @@ p = dat2_3 %>%
 p = p + ggtitle("Scatter Plot of Solo Tackles For Each Player Against West Virginia and Against Kansas State")
 p
 
-sum(dat2_3$`West Virginia`)
-sum(dat2_3$`Kansas State`)
+join = offClean %>%
+  left_join(bioClean, b= "Name")
+join$Name = as.factor(join$Name)
+join$Receiving_YDS[is.na(join$Receiving_YDS)] = 0
+
+dat3_2 = join %>%
+  group_by(join$Name) %>%
+  summarise(
+    Total_Receiving_Yards = sum(Receiving_YDS),
+    Weight = mean(Weight)
+  ) %>%
+  drop_na()
+
+dat3_2 %>%
+  ggplot(aes(x= Weight, y = Total_Receiving_Yards)) + geom_point() + xlim(c(0,300)) + xlab("Weight (lbs)") + ylab("Total Receiving Yards") + ggtitle("ISU Individual Receiving Yards\nin the 2019 Season Vs. Weight")
+

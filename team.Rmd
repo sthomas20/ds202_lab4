@@ -67,7 +67,7 @@ str(bioClean)
       ggplot(aes(value)) + geom_histogram(binwidth = .5) + facet_wrap(~Statistic) + ggtitle("Defensive Statistic Histograms")
     ```
     * Looking at the above plot of all the defensive histograms, it is clear that the three turnover categories (forced fumble, fumble recovery, and interceptions) are the most rare defensive statistics. Sacks are also quite rare as well.
-    
+<br><br>
 3.
     ```{r}
     dat2_3 = defClean2 %>%
@@ -82,7 +82,7 @@ dat2_3 = dat2_3 %>%
 p = dat2_3 %>%
   ggplot(aes(x = `West Virginia`, y = `Kansas State`)) + geom_count() + coord_cartesian(xlim = c(0,6))
 p = p + ggtitle("Scatter Plot of Solo Tackles For Each Player\n Against West Virginia and Kansas State")
-p
+p + xlab("Solo Tackles against West Virginia") + ylab("Solo Tackles against Kansas State")
     ```
     * Iowa State had a better defense against Kansas State, based on the comparison of the total solo tackles against each team. From the plot above, you can tell that most individual players recorded a higher number of solo tackles against Kansas State than they did against West Virginia. In addition, by summing the total number of solo tackles against each team, we see that ISU tallied 45 total solo tackles against Kansas State and only 34 total solo tackles against West Virginia.
     
@@ -106,14 +106,28 @@ p
 
 1.
     ```{r}
-    
+    join = offClean %>%
+      left_join(bioClean, b= "Name")
     ```
     
 2.
     ```{r}
-    
+    join$Name = as.factor(join$Name)
+    join$Receiving_YDS[is.na(join$Receiving_YDS)] = 0
+
+    dat3_2 = join %>%
+      group_by(join$Name) %>%
+      summarise(
+        Total_Receiving_Yards = sum(Receiving_YDS),
+        Weight = mean(Weight)
+      ) %>%
+      drop_na()
+
+    dat3_2 %>%
+      ggplot(aes(x= Weight, y = Total_Receiving_Yards)) + geom_point() + xlim(c(0,300)) + xlab("Weight (lbs)") + ylab("Total Receiving Yards") + ggtitle("ISU Individuals' Receiving Yards\nin the 2019 Season Vs. Their Weight")
     ```
-    
+    * Based on the above scatterplot, it is fair to say that there is no clear relationship between the weight of a player and the receiving yards they accumulated during the 2019 season. This can be explained by considering the fact that different teams emphasize different physical traits in their receivers. For example, one coach might prefer to have heavier, stronger, but slower receivers while a different coach might prefer to have lighter, but quicker receivers. With this in mind, weight cannot be seen as directly correlated to receiving yards, and other physical measurements such as speed must be included with weight to yield a clear relationship to receiving yards.
+<br><br>
 3.
     ```{r}
 defOff<- full_join(offClean, defClean, by= c('Opponent_Opponent', 'Name'))
@@ -179,7 +193,8 @@ completeISU
 
 ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ") + coord_flip()
     ```
-    * Based on output above you can see how the teams performance compares to Purdys performance. I would say that in most areas that when Purdy performs well in his respective statistic (all passing stats) the team peforms well too.
+    * Based on output above you can see how the teams performance compares to Purdys performance. I would say that in most areas that when Purdy performs well in his respective statistics (all passing stats) the team peforms well too.
+<br><br>
 4.
     ```{r, fig.width=10}
 #Question: What statistic do redshirt freshman excel in? 

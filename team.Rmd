@@ -57,20 +57,20 @@ str(bioClean)
 
 1.
     ```{r}
-    defClean = defClean %>%
+    defClean2 = defClean %>%
       pivot_longer(Tackles_Solo:Pass_PB, names_to = 'Statistic')
     ```
     
 2. 
     ```{r}
-    defClean %>%
+    defClean2 %>%
       ggplot(aes(value)) + geom_histogram(binwidth = .5) + facet_wrap(~Statistic) + ggtitle("Defensive Statistic Histograms")
     ```
     * Looking at the above plot of all the defensive histograms, it is clear that the three turnover categories (forced fumble, fumble recovery, and interceptions) are the most rare defensive statistics. Sacks are also quite rare as well.
     
 3.
     ```{r}
-    dat2_3 = defClean %>%
+    dat2_3 = defClean2 %>%
   filter(Opponent_Opponent == "West Virginia" | Opponent_Opponent == "Kansas State", Statistic == "Tackles_Solo") %>%
   pivot_wider(names_from = Opponent_Opponent, values_from =  value)
 
@@ -116,10 +116,84 @@ p
     
 3.
     ```{r}
-    
+defOff<- full_join(offClean, defClean, by= c('Opponent_Opponent', 'Name'))
+defOff2<- select(defOff, -c('Passing_CMP-ATT')) %>% 
+  distinct(defOff, Name, Opponent_Opponent, .keep_all = TRUE)
+
+avgISU<- defOff2 %>%
+  mutate(Rushing_ATT = sum(Rushing_ATT, na.rm = TRUE)) %>%
+  mutate(Rushing_YDS = sum(Rushing_YDS, na.rm = TRUE)) %>%
+  mutate(Rushing_TD = sum(Rushing_TD, na.rm = TRUE)) %>%
+  mutate(Receiving_REC = sum(Receiving_REC, na.rm = TRUE)) %>%
+  mutate(Receiving_TD = sum(Receiving_TD, na.rm = TRUE)) %>%
+  mutate(Passing_YDS = sum(Passing_YDS, na.rm = TRUE)) %>%
+  mutate(Passing_TD = sum(Passing_TD, na.rm = TRUE)) %>%
+  mutate(Passing_INT = sum(Passing_INT, na.rm = TRUE)) %>%
+  mutate(Tackles_Solo = sum(Tackles_Solo, na.rm = TRUE)) %>%
+  mutate(Tackles_ASST = sum(Tackles_ASST, na.rm = TRUE)) %>%
+  mutate(Tackles_TFL = sum(Tackles_TFL, na.rm = TRUE)) %>%
+  mutate(Tackles_Sack = sum(Tackles_Sack, na.rm = TRUE)) %>%
+  mutate(Turnover_FF = sum(Turnover_FF, na.rm = TRUE)) %>%
+  mutate(Turnover_FR = sum(Turnover_FR, na.rm = TRUE)) %>%
+  mutate(Turnover_INT = sum(Turnover_INT, na.rm = TRUE)) %>%
+  mutate(Pass_QBH = sum(Pass_QBH, na.rm = TRUE)) %>%
+  mutate(Pass_PB = sum(Pass_PB, na.rm = TRUE))
+  
+new<- head(avgISU, 1)
+new1<- select(new, -c(Name, Opponent_Opponent))
+new2<- new1 %>%
+  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
+new3<- new2 %>%
+  mutate(Name = "ISU TEAM")
+
+purdyB<- select(defOff, -c('Passing_CMP-ATT')) %>%
+  filter(Name %in% c('Purdy, Brock')) %>%
+  mutate(Rushing_ATT = sum(Rushing_ATT, na.rm = TRUE)) %>%
+  mutate(Rushing_YDS = sum(Rushing_YDS, na.rm = TRUE)) %>%
+  mutate(Rushing_TD = sum(Rushing_TD, na.rm = TRUE)) %>%
+  mutate(Receiving_REC = sum(Receiving_REC, na.rm = TRUE)) %>%
+  mutate(Receiving_TD = sum(Receiving_TD, na.rm = TRUE)) %>%
+  mutate(Passing_YDS = sum(Passing_YDS, na.rm = TRUE)) %>%
+  mutate(Passing_TD = sum(Passing_TD, na.rm = TRUE)) %>%
+  mutate(Passing_INT = sum(Passing_INT, na.rm = TRUE)) %>%
+  mutate(Tackles_Solo = sum(Tackles_Solo, na.rm = TRUE)) %>%
+  mutate(Tackles_ASST = sum(Tackles_ASST, na.rm = TRUE)) %>%
+  mutate(Tackles_TFL = sum(Tackles_TFL, na.rm = TRUE)) %>%
+  mutate(Tackles_Sack = sum(Tackles_Sack, na.rm = TRUE)) %>%
+  mutate(Turnover_FF = sum(Turnover_FF, na.rm = TRUE)) %>%
+  mutate(Turnover_FR = sum(Turnover_FR, na.rm = TRUE)) %>%
+  mutate(Turnover_INT = sum(Turnover_INT, na.rm = TRUE)) %>%
+  mutate(Pass_QBH = sum(Pass_QBH, na.rm = TRUE)) %>%
+  mutate(Pass_PB = sum(Pass_PB, na.rm = TRUE))
+
+purdyB1<- head(purdyB, 1)
+purdyB2<- select(purdyB1, -c(Opponent_Opponent))
+purdyB3<- purdyB2 %>%
+  pivot_longer(2:19, names_to = 'Type', values_to = 'Statistics')
+
+
+
+completeISU<- full_join(new3, purdyB3, by=c('Type', 'Name', 'Statistics'))
+
+completeISU
+
+ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ")
     ```
-    
+    * Based on output above you can see how the teams performance compares to Purdys performance. I would say that in most areas that when Purdy performs well in his respective statistic (all passing stats) the team peforms well too.
 4.
     ```{r}
-#Question: 
+#Question: What statistic do redshirt freshman excel in? 
+age<- full_join(avgISU, bioClean, by= c('Name'))
+
+redfreshman<- age %>%
+  filter(Class %in% c('Redshirt Freshman')) 
+    
+redfreshman1<- select(redfreshman, -c(Name, Opponent_Opponent))
+redfreshman2<- redfreshman1 %>%
+  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
+redfreshman3<- redfreshman2 %>%
+  mutate(Name = "REDSHIRT FRESHMAN")
+
+ggplot(data=redfreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Redshirt freshman performance")
     ```
+    * Redshirt freshman based on the output above seem to perform the best in the amount of passing touchdowns received. 

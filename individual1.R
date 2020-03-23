@@ -41,13 +41,13 @@ str(bioClean)
 
 ##PART TWO: TIDYING(1)
 
-defClean = defClean %>%
+defClean2 = defClean %>%
   pivot_longer(Tackles_Solo:Pass_PB, names_to = 'Statistic')
 
-defClean %>%
+defClean2 %>%
   ggplot(aes(value)) + geom_histogram(binwidth = .5) + facet_wrap(~Statistic) + ggtitle("Defensive Statistic Histograms")
 
-dat2_3 = defClean %>%
+dat2_3 = defClean2 %>%
   filter(Opponent_Opponent == "West Virginia" | Opponent_Opponent == "Kansas State", Statistic == "Tackles_Solo") %>%
   pivot_wider(names_from = Opponent_Opponent, values_from =  value)
 
@@ -142,88 +142,54 @@ completeISU<- full_join(new3, purdyB3, by=c('Type', 'Name', 'Statistics'))
 
 completeISU
 
-ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ")
+ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ") + coord_flip()
 
 
 
 #Question 4
-#How does Redshirt Freshman performance compare to Redshirt senior Performance 
 age<- full_join(avgISU, bioClean, by= c('Name'))
-
-View(age)
-
-
-
-
-freshman<- age %>%
-filter(Class %in% c('Freshman')) 
-
-freshman1<- select(freshman, -c(Name, Opponent_Opponent))
-freshman2<- freshman1 %>%
-  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-freshman3<- freshman2 %>%
-  mutate(Name = "FRESHMAN")
-freshman3
-
-junior<- age %>%
-  filter(Class %in% c('Junior')) 
-
-junior1<- select(junior, -c(Name, Opponent_Opponent))
-junior2<- junior1 %>%
-  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-junior3<- junior2 %>%
-  mutate(Name = "JUNIOR")
-junior3
-
 
 redfreshman<- age %>%
   filter(Class %in% c('Redshirt Freshman')) 
 
-
 redfreshman1<- select(redfreshman, -c(Name, Opponent_Opponent))
-redfreshman1
 redfreshman2<- redfreshman1 %>%
   pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-redfreshman2
 redfreshman3<- redfreshman2 %>%
   mutate(Name = "REDSHIRT FRESHMAN")
-redfreshman3
 
-redjunior<- age %>%
-  filter(Class %in% c('Redshirt Junior')) 
+ggplot(data=redfreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Redshirt freshman performance")
 
-redjunior1<- select(redjunior, -c(Name, Opponent_Opponent))
-redjunior2<- redjunior1 %>%
-  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-redjunior3<- redjunior2 %>%
-  mutate(Name = "REDSHIRT JUNIOR")
-redjunior3
+View(age)
 
-redsenior<- age %>%
-  filter(Class %in% c('Redshirt Senior')) 
+redshirtFreshman<- age %>%
+  filter(Class %in% c('Redshirt Freshman')) %>%
+  mutate(Rushing_ATT = sum(Rushing_ATT, na.rm = TRUE)) %>%
+  mutate(Rushing_YDS = sum(Rushing_YDS, na.rm = TRUE)) %>%
+  mutate(Rushing_TD = sum(Rushing_TD, na.rm = TRUE)) %>%
+  mutate(Receiving_REC = sum(Receiving_REC, na.rm = TRUE)) %>%
+  mutate(Receiving_TD = sum(Receiving_TD, na.rm = TRUE)) %>%
+  mutate(Passing_YDS = sum(Passing_YDS, na.rm = TRUE)) %>%
+  mutate(Passing_TD = sum(Passing_TD, na.rm = TRUE)) %>%
+  mutate(Passing_INT = sum(Passing_INT, na.rm = TRUE)) %>%
+  mutate(Tackles_Solo = sum(Tackles_Solo, na.rm = TRUE)) %>%
+  mutate(Tackles_ASST = sum(Tackles_ASST, na.rm = TRUE)) %>%
+  mutate(Tackles_TFL = sum(Tackles_TFL, na.rm = TRUE)) %>%
+  mutate(Tackles_Sack = sum(Tackles_Sack, na.rm = TRUE)) %>%
+  mutate(Turnover_FF = sum(Turnover_FF, na.rm = TRUE)) %>%
+  mutate(Turnover_FR = sum(Turnover_FR, na.rm = TRUE)) %>%
+  mutate(Turnover_INT = sum(Turnover_INT, na.rm = TRUE)) %>%
+  mutate(Pass_QBH = sum(Pass_QBH, na.rm = TRUE)) %>%
+  mutate(Pass_PB = sum(Pass_PB, na.rm = TRUE))
 
-redsenior1<- select(redsenior, -c(Name, Opponent_Opponent))
-redsenior2<- redsenior1 %>%
-  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-redsenior3<- redsenior2 %>%
-  mutate(Name = "REDSHIRT SENIOR")
-redsenior3
+redshirtFreshman1<- head(redshirtFreshman, 1)
+redshirtFreshman2<- select(redshirtFreshman1, -c(Opponent_Opponent))
+redshirtFreshman3<- redshirtFreshman2 %>%
+  pivot_longer(2:19, names_to = 'Type', values_to = 'Statistics') %>%
+  mutate(Name = "REDSHIRT FRESHMAN")
 
 
+ggplot(data=redshirtFreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Redshirt freshman performance") + coord_flip()
 
-
-
-completeClass<- full_join(redfreshman3, redsenior3, by=c('Type', 'Name', 'Statistics'))
-completeClass
-
-ggplot(data=redfreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ")
-
-
-#How does defense statistics compare to offensive?
-  defClean %>%
-  ggplot(aes(value)) + geom_histogram(binwidth = .5) + facet_wrap(~Statistic) + ggtitle("Defensive Statistics")
-
-offClean %>%
-  ggplot(aes(value)) + geom_histogram() + facet_wrap(~Statistic) + ggtitle("Offensive Statistics")
 
 

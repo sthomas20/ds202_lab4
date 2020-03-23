@@ -177,23 +177,41 @@ completeISU<- full_join(new3, purdyB3, by=c('Type', 'Name', 'Statistics'))
 
 completeISU
 
-ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ")
+ggplot(data=completeISU, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Purdy's vs Team Performance ") + coord_flip()
     ```
     * Based on output above you can see how the teams performance compares to Purdys performance. I would say that in most areas that when Purdy performs well in his respective statistic (all passing stats) the team peforms well too.
 4.
-    ```{r}
+    ```{r, fig.width=10}
 #Question: What statistic do redshirt freshman excel in? 
 age<- full_join(avgISU, bioClean, by= c('Name'))
 
-redfreshman<- age %>%
-  filter(Class %in% c('Redshirt Freshman')) 
-    
-redfreshman1<- select(redfreshman, -c(Name, Opponent_Opponent))
-redfreshman2<- redfreshman1 %>%
-  pivot_longer(1:18, names_to = 'Type', values_to = 'Statistics')
-redfreshman3<- redfreshman2 %>%
+redshirtFreshman<- age %>%
+  filter(Class %in% c('Redshirt Freshman')) %>%
+  mutate(Rushing_ATT = sum(Rushing_ATT, na.rm = TRUE)) %>%
+  mutate(Rushing_YDS = sum(Rushing_YDS, na.rm = TRUE)) %>%
+  mutate(Rushing_TD = sum(Rushing_TD, na.rm = TRUE)) %>%
+  mutate(Receiving_REC = sum(Receiving_REC, na.rm = TRUE)) %>%
+  mutate(Receiving_TD = sum(Receiving_TD, na.rm = TRUE)) %>%
+  mutate(Passing_YDS = sum(Passing_YDS, na.rm = TRUE)) %>%
+  mutate(Passing_TD = sum(Passing_TD, na.rm = TRUE)) %>%
+  mutate(Passing_INT = sum(Passing_INT, na.rm = TRUE)) %>%
+  mutate(Tackles_Solo = sum(Tackles_Solo, na.rm = TRUE)) %>%
+  mutate(Tackles_ASST = sum(Tackles_ASST, na.rm = TRUE)) %>%
+  mutate(Tackles_TFL = sum(Tackles_TFL, na.rm = TRUE)) %>%
+  mutate(Tackles_Sack = sum(Tackles_Sack, na.rm = TRUE)) %>%
+  mutate(Turnover_FF = sum(Turnover_FF, na.rm = TRUE)) %>%
+  mutate(Turnover_FR = sum(Turnover_FR, na.rm = TRUE)) %>%
+  mutate(Turnover_INT = sum(Turnover_INT, na.rm = TRUE)) %>%
+  mutate(Pass_QBH = sum(Pass_QBH, na.rm = TRUE)) %>%
+  mutate(Pass_PB = sum(Pass_PB, na.rm = TRUE))
+
+redshirtFreshman1<- head(redshirtFreshman, 1)
+redshirtFreshman2<- select(redshirtFreshman1, -c(Opponent_Opponent))
+redshirtFreshman3<- redshirtFreshman2 %>%
+  pivot_longer(2:19, names_to = 'Type', values_to = 'Statistics') %>%
   mutate(Name = "REDSHIRT FRESHMAN")
 
-ggplot(data=redfreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Redshirt freshman performance")
+
+ggplot(data=redshirtFreshman3, aes(x=Type, y = Statistics, fill = Name)) + geom_bar(stat='identity', position = position_dodge()) + theme(axis.text.x = element_text(angle =45, vjust = 0.5)) + xlab("Statistic") + ylab('Count') + ggtitle("Redshirt freshman performance") + coord_flip()
     ```
-    * Redshirt freshman based on the output above seem to perform the best in the amount of passing touchdowns received. 
+    * Redshirt freshman based on the output above seem to perform the best in the amount of passing yards achieved. 
